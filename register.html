@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <title>engineX Login</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="form-container sign-in">
+            <form action="#">
+                <h2>Register</h2>
+                <div class="form-group">
+                    <input type="text" required id="uname">
+                    <i class="fas fa-user"></i>
+                    <label for="">User Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" required id="remail">
+                    <i class="fas fa-at"></i>
+                    <label for="">Email</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" required id="regpass">
+                    <i class="fas fa-lock"></i>
+                    <label for="">Password</label>
+                </div>
+                <!-- <div class="form-group">
+                    <input type="password" required id="conpass">
+                    <i class="fas fa-lock"></i>
+                    <label for="">Confirm Password</label>
+                </div> -->
+                <button type="button" class="btn" id="otp">Get Otp</button>
+                <br><br>
+                <button type="button" class="btn" id="reg">Register</button>
+                <div class="link">
+                    <p>You already have an account?<a href="index.html" class="signin-link">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://kit.fontawesome.com/9e5ba2e3f5.js" crossorigin="anonymous"></script>
+    <script type="module">
+
+        let remail = document.getElementById('remail'),
+            regpass = document.getElementById('regpass');
+        const reg = document.getElementById('reg');
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMJXHrsT3A07k3yR69aX9h6V_4y2CG5gQ",
+            authDomain: "fir-b80ee.firebaseapp.com",
+            projectId: "fir-b80ee",
+            storageBucket: "fir-b80ee.appspot.com",
+            messagingSenderId: "100024749863",
+            appId: "1:100024749863:web:570759fa20d7b444e8e302"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        document.getElementById('otp').addEventListener('click', function () {
+            const otpVal = Math.floor(Math.random() * 1000);
+            (function () {
+                emailjs.init("ea5pSNvNxC3UOl1u1");
+            })();
+            const msg = "http://127.0.0.1:3000/NEW/register.html";
+            let params = {
+                to_name: document.getElementById('remail').value,
+                message: "Otp:-" + otpVal,
+                from_name: "engineX",
+                reply_to: "enginex43@gmail.com"
+
+
+            };
+            let serviceID = "service_bpv754j";
+            let templateID = "template_6syqb54"
+
+            emailjs.send(serviceID, templateID, params)
+            /*.then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Congratulations',
+                    text: "Verification link has been sent"
+                })
+            })*/
+            if (remail.value == "") {
+                Swal.fire({
+                    color: 'red',
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter your email',
+                })
+            }
+            else if (regpass == "") {
+                Swal.fire({
+                    color: 'red',
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter your password',
+                })
+            }
+            else {
+                const otpSent = parseInt(prompt("Enter the otp :"));
+                if (otpVal == otpSent) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Congratulations',
+                        text: "Verification link has been sent"
+                    })
+                }
+                else {
+                    Swal.fire({
+                        color: 'red',
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Wrong OTP',
+                    })
+                }
+            }
+
+        });
+        reg.addEventListener('click', function fire() {
+            const email = remail.value;
+            const password = regpass.value;
+            const userName = document.getElementById('uname').value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    Swal.fire({
+                        color: 'green',
+                        icon: 'success',
+                        title: 'CONGRATULATIONS',
+                        showConfirmButton: false,
+                        footer: '<a href="index.html">LOGIN to continue</a>'
+                    })
+                })
+                .catch((error) => {
+                    const errorMsg = error.message;
+                    console.log(error);
+                    if (userName == "") {
+                        Swal.fire({
+                            color: 'red',
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Please enter your User Name',
+                        })
+                    }
+                    else if (email == "") {
+                        Swal.fire({
+                            color: 'red',
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Please enter your email',
+                        })
+                    }
+                    else if (password == "") {
+                        Swal.fire({
+                            color: 'red',
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Please enter your password',
+                        })
+                    }
+                    else if (errorMsg == "Firebase: Error (auth/invalid-email).") {
+                        Swal.fire({
+                            color: 'red',
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Please enter valid email.',
+                        })
+                    }
+                    else if (errorMsg == "Firebase: Error (auth/email-already-in-use).") {
+                        Swal.fire({
+                            color: 'red',
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Email Already used',
+                        })
+                    }
+                    else if (errorMsg == "Firebase: Password should be at least 6 characters (auth/weak-password).") {
+                        Swal.fire({
+                            color: 'red',
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Password should be at least 6 characters.',
+                        })
+                    }
+                    else {
+                        Swal.fire({
+                            color: 'red',
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: errorMsg,
+                        })
+                    }
+
+                });
+        });
+    </script>
+</body>
+
+</html>
